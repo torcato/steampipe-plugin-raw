@@ -1,4 +1,4 @@
-module github.com/turbot/steampipe-plugin-raw
+module github.com/torcato/steampipe-plugin-raw
 
 go 1.21
 

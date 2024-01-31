@@ -1,5 +1,5 @@
 connection "raw" {
     plugin = "raw"
     
-    endpoints_file = "/home/cesar/development/raw/fdw/steampipe-plugin-raw/config/endpoints.json"
+    endpoints_file = "config/endpoints.json"
 }

@@ -70,11 +70,17 @@ func getTabels(ctx context.Context, d *plugin.TableMapData) (map[string]*plugin.
 					Transform:   transform.FromField(argName(name)),
 				}
 
+				var required string
+				if arg.Optional {
+					required = plugin.Optional
+				} else {
+					required = plugin.Required
+				}
+
 				keyCol := plugin.KeyColumn{
 					Name:      argName(name),
 					Operators: []string{"="},
-					// Check what this really does
-					Require: plugin.AnyOf,
+					Require:   required,
 				}
 				columns = append(columns, &col)
 				keyColums = append(keyColums, &keyCol)

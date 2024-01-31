@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/turbot/steampipe-plugin-raw/raw"
+	"github.com/torcato/steampipe-plugin-raw/raw"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
