@@ -1,0 +1,40 @@
+{
+    "test": {
+        "name": "test",
+        "description": "Raw test table",
+        "url": "https://api.raw-labs.com/people",
+        "fields":      {
+            "name": "string", 
+            "age": "int", 
+            "salary": "double", 
+            "projects": "json"
+        },
+        "arguments": {},
+        "headers": {}
+    },
+    "csv_api": {
+        "name": "csv_api",
+        "description": "API over csv ",
+        "url": "https://api.raw-labs.com/42",
+        "fields": {
+            "AirportID": "int",
+            "Name": "string",
+            "City": "string",
+            "Country": "string",
+            "IATA_FAA": "string",
+            "ICAO": "string",
+            "Latitude": "double",
+            "Longitude": "double",
+            "Altitude": "int",
+            "Timezone": "int",
+            "DST": "string",
+            "TZ": "string"
+        },
+        "arguments": {
+            "country": { "type": "string", "optional": true },
+            "city": { "type": "string", "optional": true },
+            "iata": { "type": "string", "optional": true }
+        },
+        "headers": {}
+    }
+}
