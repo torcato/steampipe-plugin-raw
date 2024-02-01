@@ -1,7 +1,7 @@
 {
-    "test": {
-        "name": "test",
-        "description": "Raw test table",
+    "people": {
+        "name": "people",
+        "description": "Some people",
         "url": "https://api.raw-labs.com/people",
         "fields":      {
             "name": "string", 
@@ -35,21 +35,8 @@
             "city": { "type": "string", "optional": true },
             "iata": { "type": "string", "optional": true }
         },
-        "headers": {}
-    },
-    "range": {
-        "name": "range",
-        "description": "range from 0 to n",
-        "url": "https://api.raw-labs.com/your/endpoint/3",
-        "fields": {
-            "n": "int"
-          }
-          ,
-        "arguments": {
-            "n": { "type": "string", "optional": false }
-        },
         "headers": {
-            "Authorization": "Bearer <your token>"
+            "Authorization": "Bearer <token>"
         }
     }
 }
