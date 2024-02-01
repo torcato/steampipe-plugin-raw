@@ -183,7 +183,10 @@ func listTable(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 		url = endpoint.Url
 	}
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		panic(err)
+	}
 	for name, value := range endpoint.Headers {
 		req.Header.Add(name, value)
 	}
@@ -200,6 +203,7 @@ func listTable(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 
 	var data []map[string]interface{}
 	if err := json.Unmarshal(body, &data); err != nil {
+		plugin.Logger(ctx).Error("error", "error parsing json", body, "error", err.Error())
 		panic(err)
 	}
 
