@@ -36,16 +36,27 @@ func getTabels(ctx context.Context, d *plugin.TableMapData) (map[string]*plugin.
 
 	plugin.Logger(ctx).Warn("############### init ######################")
 
+	var err error
 	config := GetConfig(d.Connection)
-	plugin.Logger(ctx).Warn("loading endpoints", "file ", *config.EndpointsFile)
 
-	file, _ := os.Open(*config.EndpointsFile)
+	file, err := os.Open(*config.EndpointsFile)
+	if err != nil {
+		plugin.Logger(ctx).Error("error", "error opening file", *config.EndpointsFile)
+		panic(err)
+	}
 
 	var endpoints map[string]endpointConfig
-	byteValue, _ := io.ReadAll(file)
+	byteValue, err := io.ReadAll(file)
+	if err != nil {
+		plugin.Logger(ctx).Error("error reading file "+*config.EndpointsFile, "error", err.Error())
+		panic("error reading file" + *config.EndpointsFile + ": " + err.Error())
+	}
 	defer file.Close()
-	json.Unmarshal([]byte(byteValue), &endpoints)
-
+	err = json.Unmarshal([]byte(byteValue), &endpoints)
+	if err != nil {
+		plugin.Logger(ctx).Error("error parsinf json file "+*config.EndpointsFile, "error", err.Error())
+		panic(err)
+	}
 	for name, endpoint := range endpoints {
 		columns := []*plugin.Column{}
 		keyColums := []*plugin.KeyColumn{}
@@ -123,17 +134,28 @@ func getType(fieldType string) proto.ColumnType {
 
 func listTable(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	plugin.Logger(ctx).Warn("############### Listing ######################")
-	globalConfig, _ := d.Connection.Config.(rawConfig)
 
-	plugin.Logger(ctx).Warn("loading endpoints", "file ", *globalConfig.EndpointsFile)
-	file, _ := os.Open(*globalConfig.EndpointsFile)
+	var err error
+	config := GetConfig(d.Connection)
+
+	file, err := os.Open(*config.EndpointsFile)
+	if err != nil {
+		plugin.Logger(ctx).Error("error", "error opening file ", *config.EndpointsFile)
+		panic(err)
+	}
 
 	var endpoints map[string]endpointConfig
-
-	byteValue, _ := io.ReadAll(file)
+	byteValue, err := io.ReadAll(file)
+	if err != nil {
+		plugin.Logger(ctx).Error("error reading file "+*config.EndpointsFile, "error", err.Error())
+		panic("error reading file" + *config.EndpointsFile + ": " + err.Error())
+	}
 	defer file.Close()
-	json.Unmarshal(byteValue, &endpoints)
-
+	err = json.Unmarshal([]byte(byteValue), &endpoints)
+	if err != nil {
+		plugin.Logger(ctx).Error("error", "error parsing json", *config.EndpointsFile)
+		panic(err)
+	}
 	endpoint := endpoints[d.Table.Name]
 
 	plugin.Logger(ctx).Warn("config", endpoint)
@@ -160,7 +182,12 @@ func listTable(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 	} else {
 		url = endpoint.Url
 	}
-	resp, err := http.Get(url)
+	client := &http.Client{}
+	req, _ := http.NewRequest("GET", url, nil)
+	for name, value := range endpoint.Headers {
+		req.Header.Add(name, value)
+	}
+	resp, err := client.Do(req)
 
 	if err != nil {
 		panic(err)
@@ -181,7 +208,6 @@ func listTable(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 			item[name] = value
 		}
 		d.StreamListItem(ctx, item)
-		plugin.Logger(ctx).Warn("Streaming", "item", item)
 
 		// Context can be cancelled due to manual cancellation or the limit has been hit
 		if d.RowsRemaining(ctx) == 0 {

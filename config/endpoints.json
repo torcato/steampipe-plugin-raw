@@ -14,7 +14,7 @@
     },
     "csv_api": {
         "name": "csv_api",
-        "description": "API over csv ",
+        "description": "API over csv",
         "url": "https://api.raw-labs.com/42",
         "fields": {
             "AirportID": "int",
@@ -36,5 +36,20 @@
             "iata": { "type": "string", "optional": true }
         },
         "headers": {}
+    },
+    "range": {
+        "name": "range",
+        "description": "range from 0 to n",
+        "url": "https://api.raw-labs.com/your/endpoint/3",
+        "fields": {
+            "n": "int"
+          }
+          ,
+        "arguments": {
+            "n": { "type": "string", "optional": false }
+        },
+        "headers": {
+            "Authorization": "Bearer <your token>"
+        }
     }
 }
