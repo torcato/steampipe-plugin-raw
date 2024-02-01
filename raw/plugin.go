@@ -158,7 +158,7 @@ func listTable(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 	}
 	endpoint := endpoints[d.Table.Name]
 
-	plugin.Logger(ctx).Warn("config", endpoint)
+	plugin.Logger(ctx).Warn("Loading table", d.Table.Name, endpoint)
 
 	urlArgs := url.Values{}
 	args := map[string]string{}
@@ -191,7 +191,7 @@ func listTable(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 		req.Header.Add(name, value)
 	}
 	resp, err := client.Do(req)
-
+	plugin.Logger(ctx).Warn("answer", "url", url, "status-code", resp.StatusCode)
 	if err != nil {
 		panic(err)
 	}
@@ -201,12 +201,14 @@ func listTable(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 		panic(err)
 	}
 
+	plugin.Logger(ctx).Warn("answer", "body", body)
+
 	var data []map[string]interface{}
 	if err := json.Unmarshal(body, &data); err != nil {
 		plugin.Logger(ctx).Error("error", "error parsing json", body, "error", err.Error())
 		panic(err)
 	}
-
+	plugin.Logger(ctx).Warn("answer", "data", data)
 	for _, item := range data {
 		for name, value := range args {
 			item[name] = value
